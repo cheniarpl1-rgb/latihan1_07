@@ -2,252 +2,183 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 void main() {
-  // Formatter Rupiah
-  final rupiah = NumberFormat.currency(
+  // Format mata uang Rupiah
+  final NumberFormat rupiah = NumberFormat.currency(
     locale: 'id_ID',
     symbol: 'Rp',
     decimalDigits: 0,
   );
 
   // ==========================
-  // RPL-12.2-102
-  // KARTU DATA BARANG
+  // RPL-12.2-204 (PENGUJIAN SKENARIO)
+  // Ubah variabel di bawah ini sesuai skenario yang ingin diuji:
+  // Skenario 1: bool anggota = true, hargaAnggota = 5000, jumlahBeli = 50, kategori = "makanan"
+  // Skenario 2: bool anggota = false, hargaUmum = 6000, jumlahBeli = 25, kategori = "makanan"
+  // Skenario 3: bool anggota = false, hargaUmum = 5000, jumlahBeli = 10, kategori = "makanan"
   // ==========================
-
+  bool anggota = true;
+  double hargaAnggota = 5000;
+  double hargaUmum = 6000;
+  int jumlahBeli = 50;
   String namaBarang = "Buku Tulis";
-  double hargaAnggota = 3500;
-  double hargaUmum = 4000;
-  int jumlahStok = 0; // Hasil kedua: stok habis
+  String kategori = "makanan";
 
-  // RPL-12.2-1S1
-  bool tersedia = jumlahStok > 0;
-
-  print("===== KARTU DATA BARANG =====");
-  print("Nama Barang: $namaBarang");
-  print("Harga Anggota: ${rupiah.format(hargaAnggota)}");
-  print("Harga Umum: ${rupiah.format(hargaUmum)}");
-  print("Jumlah Stok: $jumlahStok");
-  print("Tersedia: ${tersedia ? "Ya" : "Tidak"}");
-
-  if (tersedia) {
-    print("Status Barang: Tersedia");
+  int hargaSatuan;
+  if (anggota) {
+    hargaSatuan = hargaAnggota.toInt();
   } else {
-    print("Status Barang: Tidak Tersedia");
+    hargaSatuan = hargaUmum.toInt();
   }
 
-  print("============================");
+  double total = hargaSatuan.toDouble() * jumlahBeli;
+  double diskon = 0;
 
-  // ==========================
-  // RPL-12.2-103
-  // PERHITUNGAN HARGA
-  // ==========================
+  if (total > 200000) {
+    diskon = total * 0.10;
+  } else if (total > 100000) {
+    diskon = total * 0.05;
+  } else {
+    diskon = 0;
+  }
 
-  int jumlahBeli = 3;
+  double hargaAkhir = total - diskon;
 
-  double totalAnggota = jumlahBeli * hargaAnggota;
-  double totalUmum = jumlahBeli * hargaUmum;
-  double selisih = totalUmum - totalAnggota;
+  String rak;
+  switch (kategori) {
+    case "atk":
+      rak = "Rak 1";
+      break;
+    case "makanan":
+      rak = "Rak 2";
+      break;
+    case "minuman":
+      rak = "Rak 3";
+      break;
+    default:
+      rak = "Rak lain";
+  }
 
-  print("");
-  print("===== DATA PEMBELIAN =====");
-  print("Nama Barang : $namaBarang");
-  print("Jumlah Beli : $jumlahBeli");
-  print("Harga Anggota : ${rupiah.format(hargaAnggota)}");
-  print("Harga Umum : ${rupiah.format(hargaUmum)}");
-  print("------------------------------");
-  print("Total (anggota): ${rupiah.format(totalAnggota)}");
-  print("Total (umum): ${rupiah.format(totalUmum)}");
-  print("Selisih Harga: ${rupiah.format(selisih)}");
-  print("==============================");
+  print("===== TRANSAKSI =====");
+  print("Jenis Pembeli : ${anggota ? "Anggota" : "Umum"}");
+  print("Nama Barang   : $namaBarang");
+  print("Harga Satuan  : ${rupiah.format(hargaSatuan)}");
+  print("Jumlah Beli   : $jumlahBeli");
+  print("Total   (hargaSatuan * jumlahBeli).toDouble()total)}");
+  print("Diskon        : ${rupiah.format(diskon)}");
+  print("Harga Akhir   : ${rupiah.format(hargaAkhir)}");
+  print("Kategori      : $rak");
+  print("=====================");
 
-  runApp(const MyApp());
+  runApp(MyApp(
+    anggota: anggota,
+    hargaSatuan: hargaSatuan,
+    jumlahBeli: jumlahBeli,
+    total: total,
+    diskon: diskon,
+    hargaAkhir: hargaAkhir,
+    namaBarang: namaBarang,
+    kategori: kategori,
+    rak: rak,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool anggota;
+  final int hargaSatuan;
+  final int jumlahBeli;
+  final double total;
+  final double diskon;
+  final double hargaAkhir;
+  final String namaBarang;
+  final String kategori;
+  final String rak;
+
+  const MyApp({
+    super.key,
+    required this.anggota,
+    required this.hargaSatuan,
+    required this.jumlahBeli,
+    required this.total,
+    required this.diskon,
+    required this.hargaAkhir,
+    required this.namaBarang,
+    required this.kategori,
+    required this.rak,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Aplikasi Belajar Flutter',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.green,
-        ),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(
-        title: 'Aplikasi Belajar Flutter',
-      ),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    // Formatter Rupiah
-    final rupiah = NumberFormat.currency(
+    final NumberFormat rupiah = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp',
       decimalDigits: 0,
     );
 
-    const String namaBarang = "Buku Tulis";
-    const double hargaAnggota = 3500;
-    const double hargaUmum = 4000;
-    const int jumlahStok = 0;
-    const int jumlahBeli = 3;
-
-    final bool tersedia = jumlahStok > 0;
-
-    final double totalAnggota = jumlahBeli * hargaAnggota;
-    final double totalUmum = jumlahBeli * hargaUmum;
-    final double selisih = totalUmum - totalAnggota;
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: colorScheme.primary,
-        foregroundColor: Colors.white,
-        title: Text(widget.title),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                const Text(
-                  'You have pushed the button this many times:',
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  '$_counter',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 30),
-
-                const Divider(),
-
-                const Text(
-                  'Kartu Data Barang',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Pengujian Program Kasir - RPL-12.2-204'),
+          backgroundColor: Colors.blueAccent,
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Hasil Pengujian Transaksi",
+                                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 15),
+              Card(
+                elevation: 5,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Jenis Pembeli : ${anggota ? "Anggota" : "Umum"}"),
+                      Text("Nama Barang   : $namaBarang"),
+                      Text("Harga Satuan  : ${rupiah.format(hargaSatuan)}"),
+                      Text("Jumlah Beli   : $jumlahBeli"),
+                      const Divider(),
+                      Text("Total         : ${rupiah.format(total)}"),
+                      Text("Diskon        : ${rupiah.format(diskon)}"),
+                      Text(
+                        "Harga Akhir   : ${rupiah.format(hargaAkhir)}",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                          fontSize: 18,
+                        ),
+                      ),
+                      const Divider(),
+                      Text(
+                        "Kategori      : $rak",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepOrange,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-
-                const SizedBox(height: 15),
-
-                Card(
-                  elevation: 5,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Text("Nama Barang : $namaBarang"),
-                        Text("Harga Anggota : ${rupiah.format(hargaAnggota)}"),
-                        Text("Harga Umum : ${rupiah.format(hargaUmum)}"),
-                        Text("Jumlah Stok : $jumlahStok"),
-                        Text("Tersedia : ${tersedia ? "Ya" : "Tidak"}"),
-                        Text(
-                          tersedia
-                              ? "Status : Barang Tersedia"
-                              : "Status : Barang Tidak Tersedia",
-                          style: TextStyle(
-                            color: tersedia ? Colors.green : Colors.red,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 25),
-
-                const Divider(),
-
-                const Text(
-                  "Perhitungan Pembelian",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                const SizedBox(height: 15),
-
-                Card(
-                  elevation: 5,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Text("Jumlah Beli : $jumlahBeli"),
-                        Text(
-                          "Total (Anggota) : ${rupiah.format(totalAnggota)}",
-                        ),
-                        Text(
-                          "Total (Umum) : ${rupiah.format(totalUmum)}",
-                        ),
-                        Text(
-                          "Selisih Harga : ${rupiah.format(selisih)}",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: colorScheme.primary,
-        foregroundColor: Colors.white,
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
 }
 
-// RPL-12.2-104
-// Pemilihan tipe data yang tepat membuat data kasir lebih akurat dan mudah diproses.
-// Tipe data yang sesuai mengurangi kesalahan perhitungan harga, stok, dan status barang.
-// Dengan demikian, transaksi di koperasi menjadi lebih cepat dan terpercaya.
-
-// RPL-12.2-1S1
-// Variabel bool 'tersedia' ditentukan berdasarkan jumlah stok.
-// Jika jumlah stok lebih dari 0 maka tersedia bernilai true, sedangkan jika stok = 0 maka bernilai false.
-// Status barang ditampilkan menggunakan kondisi if...else sehingga pengguna dapat mengetahui apakah barang masih tersedia.
-
-// RPL-12.2-1S2
-// Package intl digunakan untuk memformat angka menjadi format mata uang Rupiah.
-// Dengan NumberFormat.currency(locale: 'id_ID'), harga ditampilkan menggunakan pemisah ribuan, misalnya Rp12.500.
-// Format ini membuat nominal lebih mudah dibaca dan mengurangi kesalahan saat melakukan transaksi.
+// ==========================
+// JUSTIFIKASI PENGUJIAN (RPL-12.2-204)
+// ==========================
+// Program telah bekerja sesuai aturan koperasi. Pada total belanja di atas Rp200.000 
+// diberikan diskon 10%, pada total di atas Rp100.000 diberikan diskon 5%, dan pada 
+// total Rp100.000 atau kurang tidak diberikan diskon. Harga yang digunakan juga berubah 
+// sesuai status pembeli sebagai anggota atau umum, serta posisi rak yang ditentukan 
+// menggunakan switch-case.
