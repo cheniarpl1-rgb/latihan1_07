@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// 1. Class Barang dengan atribut lengkap sesuai output
+// 1. Class Barang dengan atribut sesuai output tugas
 class Barang {
   String nama;
   double harga;
@@ -14,7 +14,7 @@ class Barang {
     required this.kategori,
   });
 
-  // Method untuk menampilkan format data barang
+  // Method untuk menampilkan detail data barang ke konsol
   void tampilkan() {
     print("====================");
     print("Nama     : $nama");
@@ -26,7 +26,7 @@ class Barang {
 }
 
 void main() {
-  // 2. Simpan ketiga objek ke List<Barang>
+  // 2. Menyimpan 3 objek ke dalam List<Barang>
   List<Barang> daftarBarang = [
     Barang(
       nama: "Buku Tulis",
@@ -48,7 +48,7 @@ void main() {
     ),
   ];
 
-  // 3. Tampilkan semua menggunakan perulangan (for-in loop)
+  // 3. Menampilkan seluruh data memakai perulangan (for-in loop)
   for (var barang in daftarBarang) {
     barang.tampilkan();
   }
@@ -57,28 +57,69 @@ void main() {
   =========================================================================
   KOMENTAR PERBANDINGAN DENGAN SPRINT 3:
   =========================================================================
-  1. Pengelolaan Data Lebih Rapi:
-     Di Sprint 3, data harus dipanggil satu per satu secara manual. Dengan 
-     List<Barang>, cukup panggil method tampilkan() di dalam perulangan.
+  Apa yang lebih baik dibanding cara Sprint 3?
 
-  2. Efisiensi & Fleksibilitas:
-     Jika ada penambahan barang baru, kita cukup memasukkannya ke dalam List 
-     tanpa perlu menambah baris kode cetak (print) baru.
+  1. Struktur Data Terorganisir (OOP Encapsulation):
+     Di Sprint 3, data variabel dipanggil/dikelola secara terpisah. 
+     Menggunakan List<Barang> membungkus atribut nama, harga, stok, dan 
+     kategori ke dalam satu objek yang rapi dan terpusat.
+
+  2. Efisiensi Perulangan & Pemanggilan Method:
+     Di Sprint 3, pencetakan data dilakukan secara manual satu per satu. 
+     Dengan List, cukup diproses melalui perulangan (looping) untuk memanggil 
+     method tampilkan() secara otomatis.
+
+  3. Akses Data Fleksibel & Dinamis:
+     Penambahan atau pengurangan barang baru dapat dilakukan dengan mudah 
+     pada List tanpa perlu menambah baris kode cetak (print) secara manual.
   =========================================================================
   */
 
-  runApp(const MyApp());
+  runApp(MyApp(daftarBarang: daftarBarang));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final List<Barang> daftarBarang;
+
+  const MyApp({super.key, required this.daftarBarang});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: Center(
-          child: Text('Cek Terminal / Debug Console untuk melihat output!'),
+        appBar: AppBar(
+          title: const Text('RPL-12.2-503 – List Barang'),
+          backgroundColor: Colors.blueAccent,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Daftar Barang Koperasi",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: daftarBarang.length,
+                  itemBuilder: (context, index) {
+                    final b = daftarBarang[index];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: ListTile(
+                        leading: const Icon(Icons.inventory, color: Colors.blueAccent),
+                        title: Text(b.nama, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text("Harga: Rp${b.harga} | Stok: ${b.stok}\nKategori: ${b.kategori}"),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
