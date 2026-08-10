@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// 1. Class Barang dengan method nilaiStok()
 class Barang {
   String nama;
   double harga;
@@ -14,12 +13,16 @@ class Barang {
     required this.kategori,
   });
 
-  // Method HOTS-1: Menghitung total nilai stok barang
+  // Method HOTS-1: Menghitung total nilai stok
   double nilaiStok() {
     return harga * stok;
   }
 
-  // Method untuk menampilkan detail data barang
+  // Method HOTS-2: Mengecek apakah stok mencukupi
+  bool bisaDijual(int diminta) {
+    return stok >= diminta;
+  }
+
   void tampilkan() {
     print("====================");
     print("Nama        : $nama");
@@ -27,6 +30,7 @@ class Barang {
     print("Stok        : $stok");
     print("Kategori    : $kategori");
     print("Nilai Stok  : Rp${nilaiStok()}");
+    print("Bisa dijual 5  : ${bisaDijual(5)}");
     print("====================");
   }
 }
@@ -52,12 +56,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int jumlahBeliContoh = 12; // Contoh uji coba beli 12 unit
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('RPL-12.2-5S1 – HOTS-1'),
-          backgroundColor: Colors.blueAccent,
+          title: const Text('RPL-12.2-5S2 – HOTS-2'),
+          backgroundColor: Colors.indigo,
         ),
         body: Padding(
           padding: const EdgeInsets.all(16),
@@ -65,12 +71,20 @@ class MyApp extends StatelessWidget {
             itemCount: daftarBarang.length,
             itemBuilder: (context, index) {
               final b = daftarBarang[index];
+              final statusBeli = b.bisaDijual(jumlahBeliContoh);
+
               return Card(
                 margin: const EdgeInsets.only(bottom: 10),
                 child: ListTile(
-                  leading: const Icon(Icons.inventory, color: Colors.blueAccent),
+                  leading: Icon(
+                    statusBeli ? Icons.check_circle : Icons.cancel,
+                    color: statusBeli ? Colors.green : Colors.red,
+                    size: 36,
+                  ),
                   title: Text(b.nama, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text("Harga: Rp${b.harga} | Stok: ${b.stok}\nTotal Nilai Aset: Rp${b.nilaiStok()}"),
+                  subtitle: Text(
+                    "Stok: ${b.stok} | Minta: $jumlahBeliContoh\nStatus: ${statusBeli ? 'Tersedia/Bisa Dijual' : 'Stok Tidak Cukup'}",
+                  ),
                 ),
               );
             },
