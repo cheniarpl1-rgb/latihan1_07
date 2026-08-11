@@ -1,67 +1,53 @@
 import 'package:flutter/material.dart';
 
-// 1. Class Barang
+// Class Barang dengan Enkapsulasi
 class Barang {
   String nama;
   double harga;
-  int stok;
-  String kategori;
+  
+  // 1. Variabel privat (pake tanda _ )
+  int _stok;
 
+  // Konstruktor
   Barang({
     required this.nama,
     required this.harga,
-    required this.stok,
-    required this.kategori,
-  });
+    required int stok,
+  }) : _stok = stok;
 
-  double nilaiStok() {
-    return harga * stok;
-  }
+  // 2. Getter untuk membaca nilai _stok dari luar
+  int get stok => _stok;
 
-  bool bisaDijual(int diminta) {
-    return stok >= diminta;
-  }
-}
-
-// 2. Class Pembeli (HOTS-3)
-class Pembeli {
-  String nama;
-  bool isAnggota; // Status anggota koperasi (True / False)
-
-  Pembeli({
-    required this.nama,
-    required this.isAnggota,
-  });
-
-  // Method untuk menghitung total belanja setelah diskon anggota (misal diskon 10%)
-  double hitungTotal(Barang barang, int jumlah) {
-    double total = barang.harga * jumlah;
-    if (isAnggota) {
-      total = total * 0.9; // Diskon 10% untuk anggota
+  // 3. Method jual(int n) untuk mengurangi stok HANYA jika mencukupi
+  bool jual(int n) {
+    if (n <= _stok) {
+      _stok -= n;
+      return true; // Penjualan berhasil
+    } else {
+      return false; // Stok tidak mencukupi
     }
-    return total;
   }
 }
 
 void main() {
-  List<Barang> daftarBarang = [
-    Barang(nama: "Buku Tulis", harga: 3000.0, stok: 20, kategori: "ATK"),
-    Barang(nama: "Pulpen", harga: 2500.0, stok: 15, kategori: "ATK"),
-  ];
+  // Pengujian
+  Barang barang1 = Barang(nama: "Buku Tulis", harga: 5000, stok: 10);
 
-  Pembeli pembeli1 = Pembeli(nama: "Budi", isAnggota: true);
+  print("Stok Awal: ${barang1.stok}");
+  
+  // Coba jual 3 pcs
+  bool suksesJual1 = barang1.jual(3);
+  print("Jual 3 pcs: ${suksesJual1 ? 'Berhasil' : 'Gagal'}, Sisa Stok: ${barang1.stok}");
 
-  print("Pembeli: ${pembeli1.nama} (Anggota: ${pembeli1.isAnggota})");
-  print("Membeli 5 Buku Tulis, Total: Rp${pembeli1.hitungTotal(daftarBarang[0], 5)}");
+  // Coba jual 10 pcs (stok tidak cukup)
+  bool suksesJual2 = barang1.jual(10);
+  print("Jual 10 pcs: ${suksesJual2 ? 'Berhasil' : 'Gagal (Stok Kurang)'}, Sisa Stok: ${barang1.stok}");
 
-  runApp(MyApp(daftarBarang: daftarBarang, pembeli: pembeli1));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final List<Barang> daftarBarang;
-  final Pembeli pembeli;
-
-  const MyApp({super.key, required this.daftarBarang, required this.pembeli});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -69,52 +55,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('RPL-12.2-5S3 – HOTS-3'),
+          title: const Text('RPL-12.2-603 – Enkapsulasi'),
           backgroundColor: Colors.teal,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Card(
-                color: Colors.teal.shade50,
-                child: ListTile(
-                  leading: const Icon(Icons.person, color: Colors.teal),
-                  title: Text("Pembeli: ${pembeli.nama}"),
-                  subtitle: Text(
-                    "Status: ${pembeli.isAnggota ? 'Anggota Koperasi (Diskon 10%)' : 'Bukan Anggota'}",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text("Daftar Transaksi:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: daftarBarang.length,
-                  itemBuilder: (context, index) {
-                    final b = daftarBarang[index];
-                    int jumlahBeli = 5;
-                    double totalHarga = pembeli.hitungTotal(b, jumlahBeli);
-
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: ListTile(
-                        leading: const Icon(Icons.shopping_cart, color: Colors.teal),
-                        title: Text(b.nama),
-                        subtitle: Text("Beli: $jumlahBeli pcs @ Rp${b.harga}"),
-                        trailing: Text(
-                          "Total: Rp${totalHarga.toStringAsFixed(0)}",
-                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.teal),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+        body: const Center(
+          child: Text(
+            "Cek hasil di Terminal / Debug Console!",
+            style: TextStyle(fontSize: 18),
           ),
         ),
       ),
