@@ -1,55 +1,55 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-// Fungsi prosesBeli sesuai instruksi tugas RPL-12.2-702
-void prosesBeli(String inputJumlah) {
+// 1. Fungsi Asinkron Memuat Laporan
+Future<void> muatLaporan() async {
+  print("=== SISTEM KASIR BRANTAS MART ===");
+  print("Memuat laporan...");
+  await Future.delayed(const Duration(seconds: 1));
+  print("Laporan siap!\n");
+}
+
+// 2. Tampilkan Barang
+void tampilkanBarang(String nama, int harga, int stok) {
+  print("--- DAFTAR BARANG ---");
+  print("Nama Barang : $nama | Harga: Rp $harga | Stok: $stok unit\n");
+}
+
+// 3. Proses Transaksi (Penanganan Salah Input & Diskon)
+void prosesTransaksi(String inputJumlah, bool isAnggota, int harga, Map<String, int> dataStok) {
+  print("--- PROSES TRANSAKSI ---");
   try {
-    // 1. Ubah input string menjadi integer
     int jumlah = int.parse(inputJumlah);
-    
-    // 2. Proses penjualan jika berhasil parse
-    print("[SUKSES] Transaksi diproses untuk $jumlah barang.");
+
+    if (jumlah <= 0 || jumlah > dataStok['stok']!) {
+      print("Galat: Jumlah beli tidak valid atau stok tidak mencukupi!");
+      return;
+    }
+
+    int total = jumlah * harga;
+    double diskon = isAnggota ? 0.10 : 0.0;
+    double totalBayar = total - (total * diskon);
+
+    dataStok['stok'] = dataStok['stok']! - jumlah;
+
+    print("Status Anggota : ${isAnggota ? 'Ya (Diskon 10%)' : 'Tidak'}");
+    print("Jumlah Beli    : $jumlah unit");
+    print("Total Bayar    : Rp ${totalBayar.toInt()}");
+    print("Sisa Stok      : ${dataStok['stok']} unit");
+    print(">> Transaksi Berhasil! <<\n");
   } catch (e) {
-    // 3. Tampilkan pesan ramah jika input salah/bukan angka
-    print("[PERINGATAN] Mohon masukkan jumlah berupa angka yang valid, silakan coba lagi.");
+    print("Galat: Input jumlah tidak valid! Harus berupa angka.");
   } finally {
-    // 4. Selalu catat log transaksi
-    print("Transaksi dicatat di log.\n");
+    print("Proses transaksi selesai.");
   }
 }
 
-void main() {
-  // Pengujian Fungsi di Terminal / Debug Console
-  print("=== UJI COBA FUNGSI PROSES BELI ===\n");
+void main() async {
+  String namaBarang = "Buku Tulis";
+  int hargaBarang = 5000;
+  var dataStok = {'stok': 20};
 
-  print("--- Pengujian 1 (Input Benar: '5') ---");
-  prosesBeli("5");
-
-  print("--- Pengujian 2 (Input Salah: 'dua') ---");
-  prosesBeli("dua");
-
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('RPL-12.2-702 – Notifikasi & Try-Catch'),
-          backgroundColor: Colors.teal,
-        ),
-        body: const Center(
-          child: Text(
-            "Cek hasil pengujian di Terminal / Debug Console!",
-            style: TextStyle(fontSize: 18),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-    );
-  }
+  // Alur Program Mengalir
+  await muatLaporan();
+  tampilkanBarang(namaBarang, hargaBarang, dataStok['stok']!);
+  prosesTransaksi("3", true, hargaBarang, dataStok);
 }
