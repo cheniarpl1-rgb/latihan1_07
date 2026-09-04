@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class KeranjangItem extends StatefulWidget {
   final int stok;
-  final int harga; // Menambahkan parameter harga
+  final int harga;
 
   const KeranjangItem({
     super.key,
@@ -15,46 +15,54 @@ class KeranjangItem extends StatefulWidget {
 }
 
 class _KeranjangItemState extends State<KeranjangItem> {
-  int jumlah = 1;
+  int jumlah = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    print('initState dipanggil');
+  }
+
+  @override
+  void dispose() {
+    print('dispose dipanggil');
+    super.dispose();
+  }
+
+  void _tambahJumlah() {
+    if (jumlah < widget.stok) {
+      setState(() {
+        jumlah++;
+      });
+    }
+  }
+
+  void _kurangiJumlah() {
+    if (jumlah > 0) {
+      setState(() {
+        jumlah--;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    int totalHarga = jumlah * widget.harga; // Menghitung total harga
+    print('build dipanggil');
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Menampilkan Total Harga
-        Text(
-          'Total: Rp$totalHarga',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(width: 8),
         IconButton(
           icon: const Icon(Icons.remove),
-          onPressed: () {
-            setState(() {
-              if (jumlah > 1) jumlah--;
-            });
-          },
+          onPressed: _kurangiJumlah,
         ),
-        Text(jumlah.toString()),
+        Text(
+          '$jumlah',
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
         IconButton(
           icon: const Icon(Icons.add),
-          onPressed: () {
-            if (jumlah < widget.stok) {
-              setState(() {
-                jumlah++;
-              });
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Jumlah tidak boleh melebihi stok!'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            }
-          },
+          onPressed: _tambahJumlah,
         ),
       ],
     );
